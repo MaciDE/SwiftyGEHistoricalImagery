@@ -9,7 +9,7 @@ Swift client to receive information about available imagery on Google Earth at s
 ## Installation
 
 ### Swift Package Manager
-To install `SwiftyGEHistoricalImagery` using [Swift Package Manager](https://swift.org/package-manager/), add `.package(name: "SwiftyProse", url: https://github.com/MaciDE/SwiftyGEHistoricalImagery.git", from: "1.0.0"),"` to your Package.swift, then follow [this](https://swift.org/package-manager#importing-dependencies) integration tutorial. 
+To install `SwiftyGEHistoricalImagery` using [Swift Package Manager](https://swift.org/package-manager/), add `.package(name: "SwiftyGEHistoricalImagery", url: https://github.com/MaciDE/SwiftyGEHistoricalImagery.git", from: "1.0.0"),"` to your Package.swift, then follow [this](https://swift.org/package-manager#importing-dependencies) integration tutorial. 
 
 ## Using `SwiftyGEHistoricalImagery`
 Once you've installed `SwiftyGEHistoricalImagery` into your project, querying information about available imagery is just a few steps.
