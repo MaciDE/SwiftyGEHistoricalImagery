@@ -7,15 +7,20 @@
 
 import Foundation
 
+enum InvalidParameterError: Error {
+    case invalidZoomLevel
+}
+
 public struct TileInformation {
     let provider: Int32
     let date: Date
     let version: Int32
+    let zoomLevel: Int
 }
 
 extension TileInformation: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "provider = \(provider), date = \(date), version = \(version)"
+        "provider = \(provider), date = \(date), version = \(version), zoomLevel = \(zoomLevel)"
     }
 }
 
@@ -32,16 +37,17 @@ public class SwiftyGEHistoricalImageryClient {
     /// Get imagery info at a specific location
     public func getInfo(
         for coordinate: Coordinate,
-        zoomLevel: Int
+        zoomLevel: Int? = nil
     ) async throws -> [TileInformation]? {
         let root = try await DbRoot.create(urlSession: urlSession, cacheDir: cacheDirPath)
         
-        let startLevel = zoomLevel
-        let endLevel = zoomLevel
-        
-        guard startLevel <= endLevel else {
-            return nil
+        if (zoomLevel != nil && !(1...24).contains(zoomLevel!)) {
+            NSLog("Zoom level has to be between 1 and 24")
+            throw InvalidParameterError.invalidZoomLevel
         }
+      
+        let startLevel = zoomLevel ?? 1
+        let endLevel = zoomLevel ?? 24
         
         var tileInfos: [TileInformation] = []
         
@@ -67,7 +73,8 @@ public class SwiftyGEHistoricalImageryClient {
                     .init(
                         provider: datedTile.provider,
                         date: date,
-                        version: datedTile.datedTileEpoch))
+                        version: datedTile.datedTileEpoch,
+                        zoomLevel: level))
             }
         }
         

@@ -8,20 +8,20 @@ final class SwiftyGEHistoricalImageryTests: XCTestCase {
     
     func testInfo() async {
         let coordinate = Coordinate(latitude: 37.33490113725751, longitude: -122.00898691413386)
-        let zoomLevel = 21
+        let zoomLevel: Int? = 21
         
         var info: [TileInformation]?
         
         do {
-            info = try await client.getInfo(for: coordinate, zoomLevel: 21)
+            info = try await client.getInfo(for: coordinate, zoomLevel: zoomLevel)
         } catch {
             print(error)
             XCTFail()
         }
-        
+      
         XCTAssertNotNil(info)
 
-        let expected = "[provider = 255, date = 2016-02-28 23:00:00 +0000, version = 279, provider = 255, date = 2017-04-29 22:00:00 +0000, version = 279, provider = 255, date = 2018-03-29 22:00:00 +0000, version = 279, provider = 255, date = 2020-09-29 22:00:00 +0000, version = 291, provider = 0, date = 2022-03-29 22:00:00 +0000, version = 302, provider = 255, date = 2023-08-30 22:00:00 +0000, version = 338]"
+        let expected = "[provider = 255, date = 2016-02-28 23:00:00 +0000, version = 279, zoomLevel = 21, provider = 255, date = 2017-04-29 22:00:00 +0000, version = 279, zoomLevel = 21, provider = 255, date = 2018-03-29 22:00:00 +0000, version = 279, zoomLevel = 21, provider = 255, date = 2020-09-29 22:00:00 +0000, version = 291, zoomLevel = 21, provider = 255, date = 2022-03-29 22:00:00 +0000, version = 346, zoomLevel = 21, provider = 400, date = 2023-05-29 22:00:00 +0000, version = 346, zoomLevel = 21, provider = 0, date = 2023-08-30 22:00:00 +0000, version = 348, zoomLevel = 21]"
         
         XCTAssertTrue(info!.description == expected)
     }
