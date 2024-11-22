@@ -109,4 +109,37 @@ public class SwiftyGEHistoricalImageryClient {
         let root = try await DbRoot.create(urlSession: urlSession, cacheDir: cacheDirPath)
         return await getAllDates(root: root, aoi: aoi, zoomLevel: zoomLevel)
     }
+  
+  /// Get imagery date availability in a specific region
+  public func getAvailability(
+      lowerLeft: Coordinate,
+      upperRight: Coordinate,
+      zoomLevel: Int
+  ) async throws -> [(tile: Tile, dates: [Date])]? {
+      func getAllDates(root: DbRoot, aoi: Rectangle, zoomLevel: Int) async -> [(tile: Tile, dates: [Date])] {
+          let tiles = aoi.getTiles(for: zoomLevel)
+          
+          var entries = [(tile: Tile, qtNode: Keyhole_QuadtreeNode?)]()
+          await withTaskGroup(of: (Tile, Keyhole_QuadtreeNode?).self) { group in
+              for tile in tiles {
+                  group.addTask {
+                      let qtNode = await root.getNode(path: tile.qtPath)
+                      return (tile, qtNode)
+                  }
+              }
+              for await pair in group {
+                  entries.append(pair)
+              }
+          }
+      
+        return entries.compactMap {
+            guard let dates = $0.qtNode?.getAllDates() else { return nil }
+            return (tile: $0.tile, dates: dates)
+        }
+      }
+      
+      let aoi = Rectangle(lowerLeft: lowerLeft, upperRight: upperRight)
+      let root = try await DbRoot.create(urlSession: urlSession, cacheDir: cacheDirPath)
+      return await getAllDates(root: root, aoi: aoi, zoomLevel: zoomLevel)
+  }
 }

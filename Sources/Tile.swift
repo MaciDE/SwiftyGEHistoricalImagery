@@ -13,6 +13,32 @@ public struct Tile {
     let row: Int
     let column: Int
     let qtPath: String
+  
+    public lazy var lowerLeft: Coordinate = {
+        return .init(
+            latitude: rowColToLatLong(rowCol: Double(row)),
+            longitude: rowColToLatLong(rowCol: Double(column)))
+    }()
+    public lazy var lowerRight: Coordinate = {
+        return .init(
+            latitude: rowColToLatLong(rowCol: Double(row)),
+            longitude: rowColToLatLong(rowCol: Double(column + 1)))
+    }()
+    public lazy var upperLeft: Coordinate = {
+        return .init(
+            latitude: rowColToLatLong(rowCol: Double(row + 1)),
+            longitude: rowColToLatLong(rowCol: Double(column)))
+    }()
+    public lazy var upperRight: Coordinate = {
+        return .init(
+            latitude: rowColToLatLong(rowCol: Double(row + 1)),
+            longitude: rowColToLatLong(rowCol: Double(column + 1)))
+    }()
+    public lazy var center: Coordinate = {
+        return .init(
+            latitude: rowColToLatLong(rowCol: Double(row) + 0.5),
+            longitude: rowColToLatLong(rowCol: Double(column) + 0.5))
+    }()
     
     public init(
         rowIndex: Int,
