@@ -14,32 +14,12 @@ public struct Tile {
     let column: Int
     let qtPath: String
   
-    public lazy var lowerLeft: Coordinate = {
-        return .init(
-            latitude: rowColToLatLong(rowCol: Double(row)),
-            longitude: rowColToLatLong(rowCol: Double(column)))
-    }()
-    public lazy var lowerRight: Coordinate = {
-        return .init(
-            latitude: rowColToLatLong(rowCol: Double(row)),
-            longitude: rowColToLatLong(rowCol: Double(column + 1)))
-    }()
-    public lazy var upperLeft: Coordinate = {
-        return .init(
-            latitude: rowColToLatLong(rowCol: Double(row + 1)),
-            longitude: rowColToLatLong(rowCol: Double(column)))
-    }()
-    public lazy var upperRight: Coordinate = {
-        return .init(
-            latitude: rowColToLatLong(rowCol: Double(row + 1)),
-            longitude: rowColToLatLong(rowCol: Double(column + 1)))
-    }()
-    public lazy var center: Coordinate = {
-        return .init(
-            latitude: rowColToLatLong(rowCol: Double(row) + 0.5),
-            longitude: rowColToLatLong(rowCol: Double(column) + 0.5))
-    }()
-    
+    let lowerLeft: Coordinate
+    let lowerRight: Coordinate
+    let upperLeft: Coordinate
+    let upperRight: Coordinate
+    let center: Coordinate
+  
     public init(
         rowIndex: Int,
         colIndex: Int,
@@ -62,10 +42,26 @@ public struct Tile {
             colIndex >>= 1
             chars[i] = Character(UnicodeScalar(row << 1 | (row ^ col) | 0x30)!)
         }
-        qtPath = String(chars)
+        self.qtPath = String(chars)
+      
+        self.lowerLeft = .init(
+            latitude: Tile.rowColToLatLong(rowCol: Double(row), level: level),
+            longitude: Tile.rowColToLatLong(rowCol: Double(column), level: level))
+        self.lowerRight = .init(
+            latitude: Tile.rowColToLatLong(rowCol: Double(row), level: level),
+            longitude: Tile.rowColToLatLong(rowCol: Double(column + 1), level: level))
+        self.upperLeft = .init(
+            latitude: Tile.rowColToLatLong(rowCol: Double(row + 1), level: level),
+            longitude: Tile.rowColToLatLong(rowCol: Double(column), level: level))
+        self.upperRight = .init(
+            latitude: Tile.rowColToLatLong(rowCol: Double(row + 1), level: level),
+            longitude: Tile.rowColToLatLong(rowCol: Double(column + 1), level: level))
+        self.center = .init(
+            latitude: Tile.rowColToLatLong(rowCol: Double(row) + 0.5, level: level),
+            longitude: Tile.rowColToLatLong(rowCol: Double(column) + 0.5, level: level))
     }
     
-    private func rowColToLatLong(rowCol: Double) -> Double {
+    private static func rowColToLatLong(rowCol: Double, level: Int) -> Double {
         return rowCol * 360.0 / Double(1 << level) - 180
     }
 }
